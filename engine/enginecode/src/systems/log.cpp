@@ -10,7 +10,7 @@ namespace Engine {
 		spdlog::set_pattern("%^[%T]: %v%$");
 		spdlog::set_level(spdlog::level::trace);
 
-		s_consoleLogger = spdlog::stderr_color_mt("Console");
+		s_consoleLogger = spdlog::stdout_color_mt("Console");
 
 	}
 
