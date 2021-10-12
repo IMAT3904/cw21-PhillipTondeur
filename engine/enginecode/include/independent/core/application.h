@@ -3,6 +3,7 @@
 #pragma once
 
 #include "systems/log.h"
+#include "timer.h"
 
 namespace Engine {
 
@@ -17,7 +18,8 @@ namespace Engine {
 	protected:
 		Application(); //!< Constructor
 
-		std::shared_ptr<Log> m_logSystem;
+		std::shared_ptr<Log> m_logSystem; //!< Log system
+		std::shared_ptr<ChronoTimer> m_timer; //!< Timer
 	private:
 		static Application* s_instance; //!< Singleton instance of the application
 		bool m_running = true; //!< Is the application running?
