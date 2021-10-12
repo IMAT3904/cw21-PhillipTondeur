@@ -4,6 +4,7 @@
 
 #include "systems/log.h"
 #include "timer.h"
+#include "events/events.h"
 
 namespace Engine {
 
@@ -17,7 +18,6 @@ namespace Engine {
 	{
 	protected:
 		Application(); //!< Constructor
-
 		std::shared_ptr<Log> m_logSystem; //!< Log system
 		std::shared_ptr<ChronoTimer> m_timer; //!< Timer
 	private:

@@ -38,12 +38,21 @@ namespace Engine {
 	void Application::run()
 	{
 		float timestep = 0.f;
+		float accumTime = 0.f;
+
 		while (m_running)
 		{
 			timestep = m_timer->getElapsedTime();
 			m_timer->reset();
-			Log::trace("FPS {0}", 1.0f / timestep);
+			//Log::trace("FPS {0}", 1.0f / timestep);
+			accumTime += timestep;
 
+			if (accumTime > 5.f)
+			{
+				WindowCloseEvent close();
+				WindowResizeEvent resize(800, 600);
+				// Handles this 
+			}
 			//frame stuff
 
 			
