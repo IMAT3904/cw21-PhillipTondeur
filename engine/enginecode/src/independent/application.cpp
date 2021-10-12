@@ -43,6 +43,7 @@ namespace Engine {
 			timestep = m_timer->getElapsedTime();
 			m_timer->reset();
 			Log::trace("FPS {0}", 1.0f / timestep);
+
 			//frame stuff
 
 			
