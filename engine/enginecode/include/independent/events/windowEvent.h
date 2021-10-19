@@ -28,7 +28,7 @@ namespace Engine
 
 		inline int32_t getWidth() const { return m_width; }
 		inline int32_t getHeight() const { return m_height; }
-		inline glm::ivec2 getPos() const { return { m_width, m_height }; }
+		inline glm::ivec2 getSize() const { return { m_width, m_height }; }
 
 	private:
 		int32_t m_width; //!< Window width after resize
