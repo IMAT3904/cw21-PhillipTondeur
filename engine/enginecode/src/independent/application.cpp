@@ -24,6 +24,18 @@ namespace Engine {
 		//reset timer 
 		m_timer.reset(new ChronoTimer);
 		m_timer->start();
+		m_handler.setOnCloseCallBack(std::bind(&Application:: onClose, this, std::placeholders::_1));
+		m_timer->reset();
+
+
+	}
+
+	bool Application::onClose(WindowCloseEvent& e)
+	{
+		e.handle(true);
+		m_running = false;
+		return e.handled();
+		
 	}
 
 	Application::~Application()
@@ -47,10 +59,13 @@ namespace Engine {
 			//Log::trace("FPS {0}", 1.0f / timestep);
 			accumTime += timestep;
 
-			if (accumTime > 5.f)
+			if (accumTime > 1.5f)
 			{
-				WindowCloseEvent close();
-				WindowResizeEvent resize(800, 600);
+				WindowCloseEvent close;
+
+				auto& callback = m_handler.getOnCloseCallback();
+				callback(close);
+				//WindowResizeEvent resize(800, 600);
 				// Handles this 
 			}
 			//frame stuff
