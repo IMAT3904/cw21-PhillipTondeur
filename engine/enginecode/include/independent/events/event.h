@@ -41,7 +41,7 @@ namespace Engine
 	class Event
 	{
 	public:
-		virtual EventType getEventtype() const = 0; //!< Get the event type 
+		virtual EventType getEventType() const = 0; //!< Get the event type 
 		virtual int32_t getCategoryFlags() const = 0; //!< Get the event category flags.
 		inline bool handled() const { return m_handled; } //!< has the event been handled 
 		inline void handle(bool isHandled) { m_handled = isHandled; } //!< Handles the event 

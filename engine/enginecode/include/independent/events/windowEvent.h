@@ -13,7 +13,7 @@ namespace Engine
 	{
 	public:
 		static EventType getStaticType() { return EventType::WindowClose; } //!< Returns static type
-		virtual inline  EventType getEventtype() const override { return EventType::WindowClose; } //!< Get the event type 
+		virtual inline  EventType getEventType() const override { return EventType::WindowClose; } //!< Get the event type 
 		virtual inline int32_t getCategoryFlags() const override { return EventCategoryWindow; } //!< Get the event category flags.
 	};
 
@@ -23,7 +23,7 @@ namespace Engine
 	public:
 		WindowResizeEvent(int32_t width, int32_t height) : m_width(width), m_height(height) {}
 		static EventType getStaticType() { return EventType::WindowResize; } //!< Returns static type
-		virtual inline  EventType getEventtype() const override { return EventType::WindowResize; } //!< Get the event type 
+		virtual inline  EventType getEventType() const override { return EventType::WindowResize; } //!< Get the event type 
 		virtual inline int32_t getCategoryFlags() const override { return EventCategoryWindow; } //!< Get the event category flags.
 
 		inline int32_t getWidth() const { return m_width; }
@@ -40,7 +40,7 @@ namespace Engine
 	public: 
 		WindowFocusEvent() {}
 		static EventType getStaticType() { return EventType::WindowFocus; } //!< Returns static type
-		virtual inline  EventType getEventtype() const override { return EventType::WindowFocus; } //!< Get the event type 
+		virtual inline  EventType getEventType() const override { return EventType::WindowFocus; } //!< Get the event type 
 		virtual inline int32_t getCategoryFlags() const override { return EventCategoryWindow; } //!< Get the event category flags.
 	};
 	
@@ -49,7 +49,7 @@ namespace Engine
 	public:
 		WindowLostFocusEvent() {}
 		static EventType getStaticType() { return EventType::WindowLostFocus; } //!< Returns static type
-		virtual inline  EventType getEventtype() const override { return EventType::WindowLostFocus; } //!< Get the event type 
+		virtual inline  EventType getEventType() const override { return EventType::WindowLostFocus; } //!< Get the event type 
 		virtual inline int32_t getCategoryFlags() const override { return EventCategoryWindow; } //!< Get the event category flags.
 	};
 	class WindowMovedEvent : public Event
@@ -57,7 +57,7 @@ namespace Engine
 	public:
 		WindowMovedEvent(int32_t x, int32_t y) : m_xPos(x), m_yPos(y) {}
 		static EventType getStaticType() { return EventType::WindowMoved; } //!< Returns static type
-		virtual inline  EventType getEventtype() const override { return EventType::WindowMoved; } //!< Get the event type 
+		virtual inline  EventType getEventType() const override { return EventType::WindowMoved; } //!< Get the event type 
 		virtual inline int32_t getCategoryFlags() const override { return EventCategoryWindow; } //!< Get the event category flags.
 
 		inline int32_t getXPos() const { return m_xPos; }

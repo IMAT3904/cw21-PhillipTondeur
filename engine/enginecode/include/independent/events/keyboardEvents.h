@@ -28,7 +28,7 @@ namespace Engine
 
 		inline int32_t getRepeatCount() const { return m_repeatCount; }
 		static EventType getStaticType() { return EventType::KeyPressed; }
-		virtual inline int32_t getEventType() const override { return getStaticType(); }
+		virtual inline EventType getEventType() const override { return getStaticType(); }
 	};
 
 	class KeyReleasedEvent : public KeyEvent
@@ -40,7 +40,7 @@ namespace Engine
 		KeyReleasedEvent(int32_t keycode) : KeyEvent(keycode) {}
 
 		static EventType getStaticType() { return EventType::KeyReleased; }
-		virtual inline int32_t getEventType() const override { return getStaticType(); }
+		virtual inline EventType getEventType() const override { return getStaticType(); }
 	};
 
 	class KeyTypedEvent : public KeyEvent
@@ -52,6 +52,6 @@ namespace Engine
 		KeyTypedEvent(int32_t keycode) : KeyEvent(keycode) {}
 
 		static EventType getStaticType() { return EventType::KeyTyped; }
-		virtual inline int32_t getEventType() const override { return getStaticType(); }
+		virtual inline EventType getEventType() const override { return getStaticType(); }
 	};
 }
