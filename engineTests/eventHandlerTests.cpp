@@ -1,3 +1,5 @@
+/** \file eventHandlerTests.cpp */
+
 #include "eventHandlerTests.h"
 
 TEST(EventHandler, onClose)
