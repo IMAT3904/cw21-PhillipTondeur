@@ -17,7 +17,7 @@ namespace Engine
 	{
 	public:
 		inline void start (){m_startPoint = std::chrono::high_resolution_clock::now(); }
-		inline void reset() {m_endPoint = std::chrono::high_resolution_clock::now(); }
+		inline void reset() {m_startPoint = std::chrono::high_resolution_clock::now(); }
 		float getElapsedTime()
 		{
 			m_endPoint = std::chrono::high_resolution_clock::now();
