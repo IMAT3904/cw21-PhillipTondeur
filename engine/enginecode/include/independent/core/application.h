@@ -3,9 +3,11 @@
 #pragma once
 
 #include "systems/log.h"
-#include "timer.h"
+#include "core/timer.h"
 #include "events/events.h"
 #include "events/eventHandler.h"
+#include "core/window.h"
+
 
 namespace Engine {
 
@@ -20,6 +22,9 @@ namespace Engine {
 	protected:
 		Application(); //!< Constructor
 		std::shared_ptr<Log> m_logSystem; //!< Log system
+		std::shared_ptr<System> m_windowsSystem; //!< Windows System
+
+		std::shared_ptr<Window> m_window; //!< Window
 		std::shared_ptr<ChronoTimer> m_timer; //!< Timer
 		EventHandler m_handler; //!< events handler
 		bool onClose(WindowCloseEvent& e); //!< Run when the window closes

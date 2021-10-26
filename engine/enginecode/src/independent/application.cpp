@@ -4,6 +4,10 @@
 #include "engine_pch.h"
 #include "core/application.h"
 
+#ifdef NG_PLATFORM_WINDOWS
+#include "platform/GLFW/GLFWSystem.h"
+#endif
+
 namespace Engine {
 	// Set static vars
 	Application* Application::s_instance = nullptr;
@@ -21,10 +25,21 @@ namespace Engine {
 		m_logSystem.reset(new Log);
 		m_logSystem->start();
 
-		//reset timer 
+#ifdef NG_PLATFORM_WINDOWS
+		m_windowsSystem.reset(new GLFWSystem);
+#endif
+		m_windowsSystem->start();
+
+		//reset timer (not a system)
 		m_timer.reset(new ChronoTimer);
 		m_timer->start();
+		
+		WindowProperties props("My Game Engine", 1024, 800);
+		
+		m_window.reset(Window::create(props));
+
 		m_handler.setOnCloseCallBack(std::bind(&Application:: onClose, this, std::placeholders::_1));
+	
 		m_timer->reset();
 
 
@@ -44,6 +59,9 @@ namespace Engine {
 
 		//Stop Logger
 		m_logSystem->stop();
+		//stop Windows system
+		m_windowsSystem->stop();
+
 	}
 
 
