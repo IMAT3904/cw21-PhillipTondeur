@@ -38,7 +38,7 @@ namespace Engine {
 		
 		m_window.reset(Window::create(props));
 
-		m_handler.setOnCloseCallBack(std::bind(&Application:: onClose, this, std::placeholders::_1));
+		m_window->getEventHandler().setOnCloseCallBack(std::bind(&Application:: onClose, this, std::placeholders::_1));
 	
 		m_timer->reset();
 
@@ -51,6 +51,14 @@ namespace Engine {
 		m_running = false;
 		return e.handled();
 		
+	}
+
+	bool Application::onResize(WindowResizeEvent& e)
+	{
+		e.handle(true);
+		auto& size = e.getSize();
+		Log::info("Window Resize ecvent:({0}, {1})", size.x, size.y);
+		return e.handled();
 	}
 
 	Application::~Application()
@@ -74,18 +82,9 @@ namespace Engine {
 		{
 			timestep = m_timer->getElapsedTime();
 			m_timer->reset();
-			//Log::trace("FPS {0}", 1.0f / timestep);
-			accumTime += timestep;
-
-			if (accumTime > 1.5f)
-			{
-				WindowCloseEvent close;
-
-				auto& callback = m_handler.getOnCloseCallback();
-				callback(close);
-				//WindowResizeEvent resize(800, 600);
-				// Handles this 
-			}
+			Log::trace("FPS {0}", 1.0f / timestep);
+			
+			m_window->onUpdate(timestep);
 			//frame stuff
 
 			

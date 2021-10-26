@@ -30,6 +30,30 @@ namespace Engine
 		{
 			m_native = glfwCreateWindow(m_props.width, m_props.height, m_props.title, nullptr, nullptr);
 		}
+
+		glfwSetWindowUserPointer(m_native, static_cast<void*>(&m_handler));
+
+		glfwSetWindowCloseCallback(m_native, [](GLFWwindow* window)
+			{
+				EventHandler* handler = static_cast<EventHandler*>(glfwGetWindowUserPointer(window));
+				auto& onClose = handler->getOnCloseCallback();
+
+				WindowCloseEvent e;
+				onClose(e);
+
+			}
+		);
+		glfwSetWindowSizeCallback(m_native,
+			[](GLFWwindow* window, int newWidth, int newHeight)
+			{
+				EventHandler* handler = static_cast<EventHandler*>(glfwGetWindowUserPointer(window));
+				auto& onResize = handler->getOnResizeCallback();
+
+				WindowResizeEvent e(newWidth, newHeight);
+				onResize(e);
+			}
+			);
+		
 	}
 	void GLFWWindowImpl::close()
 	{

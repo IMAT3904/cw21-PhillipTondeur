@@ -5,7 +5,6 @@
 #include "systems/log.h"
 #include "core/timer.h"
 #include "events/events.h"
-#include "events/eventHandler.h"
 #include "core/window.h"
 
 
@@ -26,8 +25,8 @@ namespace Engine {
 
 		std::shared_ptr<Window> m_window; //!< Window
 		std::shared_ptr<ChronoTimer> m_timer; //!< Timer
-		EventHandler m_handler; //!< events handler
 		bool onClose(WindowCloseEvent& e); //!< Run when the window closes
+		bool onResize(WindowResizeEvent& e); //!< Run when the window is resized
 	private:
 		static Application* s_instance; //!< Singleton instance of the application
 		bool m_running = true; //!< Is the application running?
