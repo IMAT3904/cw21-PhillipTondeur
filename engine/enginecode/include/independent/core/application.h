@@ -27,8 +27,19 @@ namespace Engine {
 		std::shared_ptr<ChronoTimer> m_timer; //!< Timer
 		bool onClose(WindowCloseEvent& e); //!< Run when the window closes
 		bool onResize(WindowResizeEvent& e); //!< Run when the window is resized
+		bool onMoved(WindowMovedEvent& e); //!< Moved window 
+		bool onFocus(WindowFocusEvent& e); //!< Window Focus 
+		bool onLostFocus(WindowLostFocusEvent& e); //!< Window lost focus
+		
 		bool onKeyPressed(KeyPressedEvent& e); //!< Runs the KeyPressed event 
 		bool onKeyReleased(KeyReleasedEvent& e); //!< Runs the KeyRelease event
+
+		bool onMouseMoved(MouseMovedEvent& e);
+		bool onMouseDown(MouseButtonPressedEvent& e);
+		bool onMouseUp(MouseButtonReleasedEvent& e);
+		bool onMouseWheel(MouseScrolledEvent& e);
+
+
 
 	private:
 		static Application* s_instance; //!< Singleton instance of the application

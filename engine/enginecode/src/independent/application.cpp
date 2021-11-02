@@ -40,8 +40,18 @@ namespace Engine {
 
 		m_window->getEventHandler().setOnCloseCallBack(std::bind(&Application:: onClose, this, std::placeholders::_1));
 		m_window->getEventHandler().setOnResizeCallBack(std::bind(&Application::onResize, this, std::placeholders::_1));
+		m_window->getEventHandler().setOnWindowMovedCallBack(std::bind(&Application::onMoved, this, std::placeholders::_1));
+		m_window->getEventHandler().setOnFocusCallBack(std::bind(&Application::onFocus, this, std::placeholders::_1));
+		m_window->getEventHandler().setOnLostFocusCallBack(std::bind(&Application::onLostFocus, this, std::placeholders::_1));
+
 		m_window->getEventHandler().setOnKeyPressCallBack(std::bind(&Application::onKeyPressed, this, std::placeholders::_1));
 		m_window->getEventHandler().setOnKeyReleaseCallBack(std::bind(&Application::onKeyReleased, this, std::placeholders::_1));
+
+		m_window->getEventHandler().setOnMouseMovedCallBack(std::bind(&Application::onMouseMoved, this, std::placeholders::_1));
+		m_window->getEventHandler().setOnMouseDownCallBack(std::bind(&Application::onMouseDown, this, std::placeholders::_1));
+		m_window->getEventHandler().setOnMouseUpCallBack(std::bind(&Application::onMouseUp, this, std::placeholders::_1));
+		m_window->getEventHandler().setOnMouseWheelCallBack(std::bind(&Application::onMouseWheel, this, std::placeholders::_1));
+
 		m_timer->reset();
 
 
@@ -63,6 +73,28 @@ namespace Engine {
 		return e.handled();
 	}
 
+	bool Application::onMoved(WindowMovedEvent& e)
+	{
+		e.handle(true);
+		auto& pos = e.getPos();
+		Log::info("Window Resize event:({0}, {1})", pos.x, pos.y);
+		return e.handled();
+	}
+
+	bool Application::onFocus(WindowFocusEvent& e)
+	{
+		e.handle(true);
+		Log::info("Gained focus");
+		return e.handled();
+	}
+
+	bool Application::onLostFocus(WindowLostFocusEvent& e)
+	{
+		e.handle(true);
+		Log::info("Lost focus");
+		return e.handled();
+	}
+
 	bool Application::onKeyPressed(KeyPressedEvent& e)
 	{
 		e.handle(true);
@@ -76,6 +108,37 @@ namespace Engine {
 		Log::info("Key Released event:({0})", e.getKeyCode());
 		return e.handled();
 	}
+
+	bool Application::onMouseMoved(MouseMovedEvent& e)
+	{
+		e.handle(true);
+		auto& pos = e.getPos();
+		Log::info("Mouse Moved Event: ({0}, {1})", pos.x, pos.y);
+		return e.handled();
+	}
+
+	bool Application::onMouseDown(MouseButtonPressedEvent& e)
+	{
+		e.handle(true);
+		Log::info("Mouse button Pressed event:({0})", e.getButton());
+		return e.handled();
+	}
+
+	bool Application::onMouseUp(MouseButtonReleasedEvent& e)
+	{
+		e.handle(true);
+		Log::info("Mouse button Released event:({0})", e.getButton());
+		return e.handled();
+	}
+
+	bool Application::onMouseWheel(MouseScrolledEvent& e)
+	{
+		e.handle(true);
+		Log::info("Mouse Wheel Event: {0}", e.getYOffset());
+		return e.handled();
+	}
+
+
 
 	Application::~Application()
 	{

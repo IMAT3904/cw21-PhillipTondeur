@@ -53,6 +53,35 @@ namespace Engine
 				onResize(e);
 			}
 		);
+		glfwSetWindowPosCallback(m_native,
+			[](GLFWwindow* window, int posX, int posY)
+			{
+				EventHandler* handler = static_cast<EventHandler*>(glfwGetWindowUserPointer(window));
+				auto& onMoved = handler->getOnMovedCallback();
+
+				WindowMovedEvent e(posX,posY);
+				onMoved(e);
+			}
+		);
+		glfwSetWindowFocusCallback(m_native,
+			[](GLFWwindow* window, int state)
+			{
+				EventHandler* handler = static_cast<EventHandler*>(glfwGetWindowUserPointer(window));
+
+				if (state == GLFW_TRUE)
+				{
+					auto& onFocused = handler->getOnFocusCallback();
+					WindowFocusEvent e;
+					onFocused(e);
+				}
+				else if (state == GLFW_FALSE)
+				{
+					auto& onLostFocused = handler->getOnLostFocusCallback();
+					WindowLostFocusEvent e;
+					onLostFocused(e);
+				}
+			}
+		);
 		glfwSetKeyCallback(m_native,
 			[](GLFWwindow* window, int keyCode, int scancode, int action, int mods)
 			{
@@ -78,6 +107,50 @@ namespace Engine
 					KeyReleasedEvent e(keyCode);
 					onKeyRelease(e);
 				}
+			}
+		);
+		glfwSetCursorPosCallback(m_native,
+			[](GLFWwindow* window, double mouseX, double mouseY)
+			{
+				MouseMovedEvent e(static_cast<float>(mouseX), static_cast<float>(mouseY));
+
+				EventHandler* handler = (EventHandler*)glfwGetWindowUserPointer(window);
+				auto& onMouseMoved = handler->getOnMouseMovedCallback();
+
+				onMouseMoved(e);
+
+			}
+		);
+		glfwSetMouseButtonCallback(m_native,
+			[](GLFWwindow* window,int button, int action, int mods)
+			{
+				EventHandler* handler = static_cast<EventHandler*>(glfwGetWindowUserPointer(window));
+				if (action == GLFW_PRESS)
+				{
+					auto& onMousePressed = handler->getOnMouseDownCallback();
+
+					MouseButtonPressedEvent e(button);
+					onMousePressed(e);
+				}
+				else if (action == GLFW_RELEASE)
+				{
+					MouseButtonReleasedEvent e(button);
+					auto& onMouseReleased = handler->getOnMouseUpCallback();
+
+					onMouseReleased(e);
+				}
+			}
+		);
+		glfwSetScrollCallback(m_native,
+			[](GLFWwindow* window, double xOffset, double yOffset)
+			{
+				MouseScrolledEvent e(static_cast<float>(xOffset), static_cast<float>(yOffset));
+				EventHandler* handler = (EventHandler*)glfwGetWindowUserPointer(window);
+
+				auto& onMouseScrolled = handler->getOnMouseWheelCallback();
+
+				onMouseScrolled(e);
+
 			}
 		);
 	}
