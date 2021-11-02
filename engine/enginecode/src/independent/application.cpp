@@ -52,6 +52,8 @@ namespace Engine {
 		m_window->getEventHandler().setOnMouseUpCallBack(std::bind(&Application::onMouseUp, this, std::placeholders::_1));
 		m_window->getEventHandler().setOnMouseWheelCallBack(std::bind(&Application::onMouseWheel, this, std::placeholders::_1));
 
+
+		InputPoller::setNativeWindow(m_window->getNativeWindow());
 		m_timer->reset();
 
 
@@ -163,6 +165,10 @@ namespace Engine {
 			m_timer->reset();
 			//Log::trace("FPS {0}", 1.0f / timestep);
 			
+			if (InputPoller::isKeyPressed(NG_KEY_W)) Log::error("W Pressed");
+			if (InputPoller::isMouseButtonPressed(NG_MOUSE_BUTTON_1)) Log::error("Left Mouse Button Pressed");
+		//	Log::trace("Current mouse pos: ({0}, {1})", InputPoller::getMouseX(), InputPoller::getMouseY());
+
 			m_window->onUpdate(timestep);
 			//frame stuff
 

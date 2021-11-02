@@ -6,7 +6,8 @@
 #include "core/timer.h"
 #include "events/events.h"
 #include "core/window.h"
-
+#include "core/inputPoller.h"
+#include "platform/GLFW/GLFWCodes.h"
 
 namespace Engine {
 
@@ -48,6 +49,7 @@ namespace Engine {
 	public:
 		virtual ~Application(); //!< Deconstructor
 		inline static Application& getInstance() { return *s_instance; } //!< Instance getter from singleton pattern
+	
 		void run(); //!< Main loop
 		
 
