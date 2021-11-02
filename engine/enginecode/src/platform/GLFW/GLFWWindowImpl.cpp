@@ -52,9 +52,36 @@ namespace Engine
 				WindowResizeEvent e(newWidth, newHeight);
 				onResize(e);
 			}
-			);
-		
+		);
+		glfwSetKeyCallback(m_native,
+			[](GLFWwindow* window, int keyCode, int scancode, int action, int mods)
+			{
+				EventHandler* handler = static_cast<EventHandler*>(glfwGetWindowUserPointer(window));
+				if (action == GLFW_PRESS)
+				{
+					auto& onKeyPress = handler->getOnKeyPressCallback();
+
+					KeyPressedEvent e(keyCode, 0);
+					onKeyPress(e);
+				}
+				else if (action == GLFW_REPEAT)
+				{
+					auto& onKeyPress = handler->getOnKeyPressCallback();
+
+					KeyPressedEvent e(keyCode, 0);
+					onKeyPress(e);
+				}
+				else if (action == GLFW_RELEASE)
+				{
+					auto& onKeyRelease = handler->getOnKeyReleaseCallback();
+
+					KeyReleasedEvent e(keyCode);
+					onKeyRelease(e);
+				}
+			}
+		);
 	}
+
 	void GLFWWindowImpl::close()
 	{
 		glfwDestroyWindow(m_native);

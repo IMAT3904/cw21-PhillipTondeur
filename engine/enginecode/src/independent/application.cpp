@@ -39,7 +39,9 @@ namespace Engine {
 		m_window.reset(Window::create(props));
 
 		m_window->getEventHandler().setOnCloseCallBack(std::bind(&Application:: onClose, this, std::placeholders::_1));
-	
+		m_window->getEventHandler().setOnResizeCallBack(std::bind(&Application::onResize, this, std::placeholders::_1));
+		m_window->getEventHandler().setOnKeyPressCallBack(std::bind(&Application::onKeyPressed, this, std::placeholders::_1));
+		m_window->getEventHandler().setOnKeyReleaseCallBack(std::bind(&Application::onKeyReleased, this, std::placeholders::_1));
 		m_timer->reset();
 
 
@@ -57,7 +59,21 @@ namespace Engine {
 	{
 		e.handle(true);
 		auto& size = e.getSize();
-		Log::info("Window Resize ecvent:({0}, {1})", size.x, size.y);
+		Log::info("Window Resize event:({0}, {1})", size.x, size.y);
+		return e.handled();
+	}
+
+	bool Application::onKeyPressed(KeyPressedEvent& e)
+	{
+		e.handle(true);
+		Log::info("Key Pressed event:({0}, {1})", e.getKeyCode(), e.getRepeatCount());
+		return e.handled();
+	}
+
+	bool Application::onKeyReleased(KeyReleasedEvent& e)
+	{
+		e.handle(true);
+		Log::info("Key Released event:({0})", e.getKeyCode());
 		return e.handled();
 	}
 
@@ -82,7 +98,7 @@ namespace Engine {
 		{
 			timestep = m_timer->getElapsedTime();
 			m_timer->reset();
-			Log::trace("FPS {0}", 1.0f / timestep);
+			//Log::trace("FPS {0}", 1.0f / timestep);
 			
 			m_window->onUpdate(timestep);
 			//frame stuff
