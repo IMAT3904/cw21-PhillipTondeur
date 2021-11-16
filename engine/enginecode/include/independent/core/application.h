@@ -3,9 +3,11 @@
 #pragma once
 
 #include "systems/log.h"
-#include "timer.h"
+#include "core/timer.h"
 #include "events/events.h"
-#include "events/eventHandler.h"
+#include "core/window.h"
+#include "core/inputPoller.h"
+#include "platform/GLFW/GLFWCodes.h"
 
 namespace Engine {
 
@@ -20,9 +22,26 @@ namespace Engine {
 	protected:
 		Application(); //!< Constructor
 		std::shared_ptr<Log> m_logSystem; //!< Log system
+		std::shared_ptr<System> m_windowsSystem; //!< Windows System
+
+		std::shared_ptr<Window> m_window; //!< Window
 		std::shared_ptr<ChronoTimer> m_timer; //!< Timer
-		EventHandler m_handler; //!< events handler
 		bool onClose(WindowCloseEvent& e); //!< Run when the window closes
+		bool onResize(WindowResizeEvent& e); //!< Run when the window is resized
+		bool onMoved(WindowMovedEvent& e); //!< Moved window 
+		bool onFocus(WindowFocusEvent& e); //!< Window Focus 
+		bool onLostFocus(WindowLostFocusEvent& e); //!< Window lost focus
+		
+		bool onKeyPressed(KeyPressedEvent& e); //!< Runs the KeyPressed event 
+		bool onKeyReleased(KeyReleasedEvent& e); //!< Runs the KeyRelease event
+
+		bool onMouseMoved(MouseMovedEvent& e);
+		bool onMouseDown(MouseButtonPressedEvent& e);
+		bool onMouseUp(MouseButtonReleasedEvent& e);
+		bool onMouseWheel(MouseScrolledEvent& e);
+
+
+
 	private:
 		static Application* s_instance; //!< Singleton instance of the application
 		bool m_running = true; //!< Is the application running?
@@ -30,6 +49,7 @@ namespace Engine {
 	public:
 		virtual ~Application(); //!< Deconstructor
 		inline static Application& getInstance() { return *s_instance; } //!< Instance getter from singleton pattern
+	
 		void run(); //!< Main loop
 		
 
