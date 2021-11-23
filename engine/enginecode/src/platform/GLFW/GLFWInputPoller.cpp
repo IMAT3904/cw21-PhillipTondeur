@@ -2,6 +2,7 @@
 
 #include "engine_pch.h"
 #include "platform/GLFW/GLFWInputPoller.h"
+#include "platform/GLFW/GLFW_OpenGL_GC.h"
 
 namespace Engine
 {

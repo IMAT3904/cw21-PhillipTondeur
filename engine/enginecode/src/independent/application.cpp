@@ -4,6 +4,8 @@
 #include "engine_pch.h"
 #include "core/application.h"
 
+#include <glad/glad.h>
+
 #ifdef NG_PLATFORM_WINDOWS
 #include "platform/GLFW/GLFWSystem.h"
 #endif
@@ -159,12 +161,15 @@ namespace Engine {
 		float timestep = 0.f;
 		float accumTime = 0.f;
 
+		glEnable(GL_DEPTH);
+		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
 		while (m_running)
 		{
 			timestep = m_timer->getElapsedTime();
 			m_timer->reset();
 			//Log::trace("FPS {0}", 1.0f / timestep);
 			
+			glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT);
 			if (InputPoller::isKeyPressed(NG_KEY_W)) Log::error("W Pressed");
 			if (InputPoller::isMouseButtonPressed(NG_MOUSE_BUTTON_1)) Log::error("Left Mouse Button Pressed");
 		//	Log::trace("Current mouse pos: ({0}, {1})", InputPoller::getMouseX(), InputPoller::getMouseY());

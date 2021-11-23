@@ -3,6 +3,7 @@
 #pragma once
 
 #include "events/eventHandler.h"
+#include "core/graphicsContext.h"
 
 namespace Engine
 {
@@ -40,6 +41,6 @@ namespace Engine
 		static Window* create(const WindowProperties& properties = WindowProperties());
 	protected:
 		EventHandler m_handler; //!< Event handler
-		//std::shared_ptr<GraphicsContext> m_graphicsContext;
+		std::shared_ptr<GraphicsContext> m_graphicsContext;
 	};
 }
