@@ -16,6 +16,8 @@
 #include<glm/gtc/matrix_transform.hpp>
 #include<glm/gtc/type_ptr.hpp>
 
+#include "platform/OpenGL/OpenGLVertexArray.h"
+
 namespace Engine {
 	// Set static vars
 	Application* Application::s_instance = nullptr;
@@ -250,43 +252,36 @@ namespace Engine {
 #pragma endregion
 
 #pragma region GL_BUFFERS
-		uint32_t cubeVAO, cubeVBO, cubeIBO;
+		std::shared_ptr<OpenGLVertexArray> cubeVAO;
+		std::shared_ptr<OpenGLVertexBuffer> cubeVBO;
+		std::shared_ptr<OpenGLIndexBuffer> cubeIBO;
 
-		glCreateVertexArrays(1, &cubeVAO);
-		glBindVertexArray(cubeVAO);
+		cubeVAO.reset(new OpenGLVertexArray);
 
-		glCreateBuffers(1, &cubeVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+		BufferLayout cubeBL = { ShaderDataType::Float3, ShaderDataType::Float3, ShaderDataType::Float2 }; //creating a buffer from it's initialiser list 
+		cubeVBO.reset(new OpenGLVertexBuffer(cubeVertices, sizeof(cubeVertices), cubeBL));
 
-		glCreateBuffers(1, &cubeIBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeIBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
+		cubeIBO.reset(new OpenGLIndexBuffer(cubeIndices, 36));
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); // position
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); // Normal
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))); // UV co-ords
+		cubeVAO->addVertexBuffer(cubeVBO);
+		cubeVAO->setIndexBuffer(cubeIBO);
 
-		uint32_t pyramidVAO, pyramidVBO, pyramidIBO;
 
-		glCreateVertexArrays(1, &pyramidVAO);
-		glBindVertexArray(pyramidVAO);
 
-		glCreateBuffers(1, &pyramidVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, pyramidVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(pyramidVertices), pyramidVertices, GL_STATIC_DRAW);
+		std::shared_ptr<OpenGLVertexArray> pyramidVAO;
+		std::shared_ptr<OpenGLVertexBuffer> pyramidVBO;
+		std::shared_ptr<OpenGLIndexBuffer> pyramidIBO;
 
-		glCreateBuffers(1, &pyramidIBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pyramidIBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(pyramidIndices), pyramidIndices, GL_STATIC_DRAW);
+		pyramidVAO.reset(new OpenGLVertexArray);
+		BufferLayout pyramidBL = { ShaderDataType::Float3, ShaderDataType::Float3 };
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); // Position
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float))); // Colour
+		pyramidVBO.reset(new OpenGLVertexBuffer(pyramidVertices, sizeof(pyramidVertices), pyramidBL));
+
+		pyramidIBO.reset(new OpenGLIndexBuffer(pyramidIndices, 18));
+
+		pyramidVAO->addVertexBuffer(pyramidVBO);
+		pyramidVAO->setIndexBuffer(pyramidIBO);
+		
 #pragma endregion
 
 
@@ -597,8 +592,8 @@ namespace Engine {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			glUseProgram(FCprogram);
-			glBindVertexArray(pyramidVAO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pyramidIBO);
+			glBindVertexArray(pyramidVAO->getrenderID());
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pyramidIBO->getrenderID());
 
 			GLuint uniformLocation;
 
@@ -611,11 +606,12 @@ namespace Engine {
 			uniformLocation = glGetUniformLocation(FCprogram, "u_projection");
 			glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
-			glDrawElements(GL_TRIANGLES, 3 * 6, GL_UNSIGNED_INT, nullptr);
+			glDrawElements(GL_TRIANGLES, pyramidVAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
 
 			glUseProgram(TPprogram);
-			glBindVertexArray(cubeVAO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeIBO);
+
+			glBindVertexArray(cubeVAO->getrenderID());
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeIBO->getrenderID());
 
 
 			uniformLocation = glGetUniformLocation(TPprogram, "u_model");
@@ -640,25 +636,20 @@ namespace Engine {
 			uniformLocation = glGetUniformLocation(TPprogram, "u_texData");
 			glUniform1i(uniformLocation, 0);
 
-			glDrawElements(GL_TRIANGLES, 3 * 12, GL_UNSIGNED_INT, nullptr);
+			glDrawElements(GL_TRIANGLES, cubeVAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
 
 			uniformLocation = glGetUniformLocation(TPprogram, "u_model");
 			glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(models[2]));
 
 			glBindTexture(GL_TEXTURE_2D, numberTexture);
 
-			glDrawElements(GL_TRIANGLES, 3 * 12, GL_UNSIGNED_INT, nullptr);
-
+			glDrawElements(GL_TRIANGLES, cubeVAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
+			
 			m_window->onUpdate(timestep);
 		}
 
-		glDeleteVertexArrays(1, &cubeVAO);
-		glDeleteBuffers(1, &cubeVBO);
-		glDeleteBuffers(1, &cubeIBO);
 
-		glDeleteVertexArrays(1, &pyramidVAO);
-		glDeleteBuffers(1, &pyramidVBO);
-		glDeleteBuffers(1, &pyramidIBO);
+		
 
 		glDeleteShader(FCprogram);
 		glDeleteShader(TPprogram);
