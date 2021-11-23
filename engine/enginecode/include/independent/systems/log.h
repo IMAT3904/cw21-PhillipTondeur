@@ -75,7 +75,7 @@ namespace Engine
 	static void Log::warning(Args&&... args)
 	{
 #ifdef NG_DEBUG
-		s_consoleLogger->warning(std::forward<Args>(args) ...);
+		s_consoleLogger->warn(std::forward<Args>(args) ...);
 #endif
 	}
 
