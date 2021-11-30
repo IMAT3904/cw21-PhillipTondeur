@@ -174,41 +174,36 @@ namespace Engine {
 		numberTexture.reset(new OpenGLTexture("assets/textures/numberCube.png"));
 
 		SubTexture letterCube(letterTexture, { 0.f,0.f }, { 1.0f,0.5f });
-		SubTexture numberCube(letterTexture, { 0.f,0.f }, { 1.0f,1.0f });
+		SubTexture numberCube(letterTexture, { 0.f,0.5f }, { 1.0f,1.0f });
 #pragma endregion
 #pragma region RAW_DATA
 
 		float cubeVertices[8 * 24] = {
 			//	 <------ Pos ------>  <--- normal --->  <-- UV -->
-				 0.5f,  0.5f, -0.5f,  0.f,  0.f, -1.f,  0.f,   0.f,
-				 0.5f, -0.5f, -0.5f,  0.f,  0.f, -1.f,  0.f,   0.5f,
-				-0.5f, -0.5f, -0.5f,  0.f,  0.f, -1.f,  0.33f, 0.5f,
-				-0.5f,  0.5f, -0.5f,  0.f,  0.f, -1.f,  0.33f, 0.f,
-
-				-0.5f, -0.5f, 0.5f,   0.f,  0.f,  1.f,  0.33f, 0.5f,
-				 0.5f, -0.5f, 0.5f,   0.f,  0.f,  1.f,  0.66f, 0.5f,
-				 0.5f,  0.5f, 0.5f,   0.f,  0.f,  1.f,  0.66f, 0.f,
-				-0.5f,  0.5f, 0.5f,   0.f,  0.f,  1.f,  0.33,  0.f,
-
-				-0.5f, -0.5f, -0.5f,  0.f, -1.f,  0.f,  1.f,   0.f,
-				 0.5f, -0.5f, -0.5f,  0.f, -1.f,  0.f,  0.66f, 0.f,
-				 0.5f, -0.5f, 0.5f,   0.f, -1.f,  0.f,  0.66f, 0.5f,
-				-0.5f, -0.5f, 0.5f,   0.f, -1.f,  0.f,  1.0f,  0.5f,
-
-				 0.5f,  0.5f, 0.5f,   0.f,  1.f,  0.f,  0.f,   0.5f,
-				 0.5f,  0.5f, -0.5f,  0.f,  1.f,  0.f,  0.f,   1.0f,
-				-0.5f,  0.5f, -0.5f,  0.f,  1.f,  0.f,  0.33f, 1.0f,
-				-0.5f,  0.5f, 0.5f,   0.f,  1.f,  0.f,  0.3f,  0.5f,
-
-				-0.5f,  0.5f, 0.5f,  -1.f,  0.f,  0.f,  0.66f, 0.5f,
-				-0.5f,  0.5f, -0.5f, -1.f,  0.f,  0.f,  0.33f, 0.5f,
-				-0.5f, -0.5f, -0.5f, -1.f,  0.f,  0.f,  0.33f, 1.0f,
-				-0.5f, -0.5f, 0.5f,  -1.f,  0.f,  0.f,  0.66f, 1.0f,
-
-				 0.5f, -0.5f, -0.5f,  1.f,  0.f,  0.f,  1.0f,  1.0f,
-				 0.5f,  0.5f, -0.5f,  1.f,  0.f,  0.f,  1.0f,  0.5f,
-				 0.5f,  0.5f, 0.5f,   1.f,  0.f,  0.f,  0.66f, 0.5f,
-				 0.5f, -0.5f, 0.5f,   1.f,  0.f,  0.f,  0.66f, 1.0f
+				 0.5f,  0.5f, -0.5f,  0.f,  0.f, -1.f, numberCube.transformU(0.f),    numberCube.transformV( 0.f),
+				 0.5f, -0.5f, -0.5f,  0.f,  0.f, -1.f, numberCube.transformU(0.f),    numberCube.transformV( 0.5f),
+				-0.5f, -0.5f, -0.5f,  0.f,  0.f, -1.f, numberCube.transformU(0.33f),  numberCube.transformV( 0.5f),
+				-0.5f,  0.5f, -0.5f,  0.f,  0.f, -1.f, numberCube.transformU(0.33f),  numberCube.transformV( 0.f),
+				-0.5f, -0.5f, 0.5f,   0.f,  0.f,  1.f, numberCube.transformU(0.33f),  numberCube.transformV( 0.5f),
+				 0.5f, -0.5f, 0.5f,   0.f,  0.f,  1.f, numberCube.transformU(0.66f),  numberCube.transformV( 0.5f),
+				 0.5f,  0.5f, 0.5f,   0.f,  0.f,  1.f, numberCube.transformU(0.66f),  numberCube.transformV( 0.f),
+				-0.5f,  0.5f, 0.5f,   0.f,  0.f,  1.f, numberCube.transformU(0.33),   numberCube.transformV( 0.f),
+				-0.5f, -0.5f, -0.5f,  0.f, -1.f,  0.f, numberCube.transformU(1.f),    numberCube.transformV( 0.f),
+				 0.5f, -0.5f, -0.5f,  0.f, -1.f,  0.f, numberCube.transformU(0.66f),  numberCube.transformV( 0.f),
+				 0.5f, -0.5f, 0.5f,   0.f, -1.f,  0.f, numberCube.transformU(0.66f),  numberCube.transformV( 0.5f),
+				-0.5f, -0.5f, 0.5f,   0.f, -1.f,  0.f, numberCube.transformU(1.0f),   numberCube.transformV( 0.5f),
+				 0.5f,  0.5f, 0.5f,   0.f,  1.f,  0.f, numberCube.transformU(0.f),    numberCube.transformV( 0.5f),
+				 0.5f,  0.5f, -0.5f,  0.f,  1.f,  0.f, numberCube.transformU(0.f),    numberCube.transformV( 1.0f),
+				-0.5f,  0.5f, -0.5f,  0.f,  1.f,  0.f, numberCube.transformU(0.33f),  numberCube.transformV( 1.0f),
+				-0.5f,  0.5f, 0.5f,   0.f,  1.f,  0.f, numberCube.transformU(0.3f),   numberCube.transformV( 0.5f),
+				-0.5f,  0.5f, 0.5f,  -1.f,  0.f,  0.f, numberCube.transformU(0.66f),  numberCube.transformV( 0.5f),
+				-0.5f,  0.5f, -0.5f, -1.f,  0.f,  0.f, numberCube.transformU(0.33f),  numberCube.transformV( 0.5f),
+				-0.5f, -0.5f, -0.5f, -1.f,  0.f,  0.f, numberCube.transformU(0.33f),  numberCube.transformV( 1.0f),
+				-0.5f, -0.5f, 0.5f,  -1.f,  0.f,  0.f, numberCube.transformU(0.66f),  numberCube.transformV( 1.0f),
+				 0.5f, -0.5f, -0.5f,  1.f,  0.f,  0.f, numberCube.transformU(1.0f),   numberCube.transformV( 1.0f),
+				 0.5f,  0.5f, -0.5f,  1.f,  0.f,  0.f, numberCube.transformU(1.0f),   numberCube.transformV( 0.5f),
+				 0.5f,  0.5f, 0.5f,   1.f,  0.f,  0.f, numberCube.transformU(0.66f),  numberCube.transformV( 0.5f),
+				 0.5f, -0.5f, 0.5f,   1.f,  0.f,  0.f, numberCube.transformU(0.66f),  numberCube.transformV( 1.0f)
 		};
 
 		float pyramidVertices[6 * 16] = {
@@ -385,7 +380,7 @@ namespace Engine {
 			uniformLocation = glGetUniformLocation(TPShader->getID(), "u_model");
 			glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(models[2]));
 
-			glBindTexture(GL_TEXTURE_2D, numberTexture->getID());
+			//glBindTexture(GL_TEXTURE_2D, numberTexture->getID());
 
 			glDrawElements(GL_TRIANGLES, cubeVAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
 			
