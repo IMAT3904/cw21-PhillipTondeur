@@ -10,14 +10,13 @@
 #include "platform/GLFW/GLFWSystem.h"
 #endif
 
-
-
 #include<glm/gtc/matrix_transform.hpp>
 #include<glm/gtc/type_ptr.hpp>
 
 #include "platform/OpenGL/OpenGLVertexArray.h"
 #include "platform/OpenGL/OpenGLShader.h"
 #include "platform/OpenGL/OpenGLTexture.h"
+#include "rendering/subTexture.h"
 
 namespace Engine {
 	// Set static vars
@@ -167,6 +166,16 @@ namespace Engine {
 
 	void Application::run()
 	{
+#pragma region TEXTURES
+
+		std::shared_ptr<OpenGLTexture> letterTexture;
+		letterTexture.reset(new OpenGLTexture("assets/textures/letterAndNumberCube.png"));
+		std::shared_ptr<OpenGLTexture> numberTexture;
+		numberTexture.reset(new OpenGLTexture("assets/textures/numberCube.png"));
+
+		SubTexture letterCube(letterTexture, { 0.f,0.f }, { 1.0f,0.5f });
+		SubTexture numberCube(letterTexture, { 0.f,0.f }, { 1.0f,1.0f });
+#pragma endregion
 #pragma region RAW_DATA
 
 		float cubeVertices[8 * 24] = {
@@ -295,14 +304,6 @@ namespace Engine {
 		TPShader.reset(new OpenGLShader("./assets/shaders/texturedPhong.glsl"));
 #pragma endregion 
 
-#pragma region TEXTURES
-
-		std::shared_ptr<OpenGLTexture> letterTexture;
-		letterTexture.reset(new OpenGLTexture("assets/textures/letterCube.png"));
-		std::shared_ptr<OpenGLTexture> numberTexture;
-		numberTexture.reset(new OpenGLTexture("assets/textures/numberCube.png"));
-		
-#pragma endregion
 
 		glm::mat4 view = glm::lookAt(
 			glm::vec3(0.f, 0.f, 0.f),

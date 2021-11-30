@@ -16,6 +16,8 @@ namespace Engine
 		inline uint32_t getID() { return m_OpenGL_ID; } //!< accessor of ID
 		inline uint32_t getWidth() { return m_width; } //!< accessor of width
 		inline uint32_t getHeight() { return m_height; } //!< accessor of height 
+		inline uint32_t getWidthf() { return static_cast<float>(m_width); } //!< accessor of widthf
+		inline uint32_t getHeightf() { return static_cast<float>(m_height); } //!< accessor of heightf
 		inline uint32_t getChannels() { return m_channels; } //!< accessor of channels 
 
 	private:
