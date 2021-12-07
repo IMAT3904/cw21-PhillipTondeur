@@ -8,10 +8,13 @@ namespace Engine
 {
 	uint32_t OpenGLUniformBuffer::s_blockNumber = 0;
 
-	OpenGLUniformBuffer::OpenGLUniformBuffer(const UniformBufferLayout& layout) : m_layout(layout)
+	OpenGLUniformBuffer::OpenGLUniformBuffer(const UniformBufferLayout& layout) 
 	{
 		m_blockNumber = s_blockNumber;
 		s_blockNumber++;
+
+		m_layout = layout;
+
 		glGenBuffers(1, &m_OpenGL_ID);
 		glBindBuffer(GL_UNIFORM_BUFFER, m_OpenGL_ID);
 		glBufferData(GL_UNIFORM_BUFFER, m_layout.getStride(), nullptr, GL_DYNAMIC_DRAW);
@@ -22,7 +25,7 @@ namespace Engine
 			m_uniformCache[element.m_name] = std::pair<uint32_t, uint32_t>(element.m_offset, element.m_size);
 		}
 	}
-	OpenGLUniformBuffer::OpenGLUniformBuffer()
+	OpenGLUniformBuffer::~OpenGLUniformBuffer()
 	{
 		glDeleteBuffers(1, &m_OpenGL_ID);
 	}
