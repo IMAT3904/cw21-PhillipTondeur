@@ -106,6 +106,7 @@ namespace Engine
 		uint32_t uniformLocation = glGetUniformLocation(m_OpenGL_ID, name);
 		glUniform4f(uniformLocation, value.x, value.y, value.z, value.w);
 	}
+
 	void OpenGLShader::uploadMat4(const char* name, const glm::mat4& value)
 	{
 		uint32_t uniformLocation = glGetUniformLocation(m_OpenGL_ID, name);

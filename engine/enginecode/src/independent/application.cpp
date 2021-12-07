@@ -17,6 +17,7 @@
 #include "platform/OpenGL/OpenGLShader.h"
 #include "platform/OpenGL/OpenGLTexture.h"
 #include "rendering/subTexture.h"
+#include "platform/OpenGL/OpenGLUniformBuffer.h"
 
 namespace Engine {
 	// Set static vars
@@ -263,7 +264,7 @@ namespace Engine {
 
 		cubeVAO.reset(new OpenGLVertexArray);
 
-		BufferLayout cubeBL = { ShaderDataType::Float3, ShaderDataType::Float3, ShaderDataType::Float2 }; //creating a buffer from it's initialiser list 
+		VertexBufferLayout cubeBL = { ShaderDataType::Float3, ShaderDataType::Float3, ShaderDataType::Float2 }; //creating a buffer from it's initialiser list 
 		cubeVBO.reset(new OpenGLVertexBuffer(cubeVertices, sizeof(cubeVertices), cubeBL));
 
 		cubeIBO.reset(new OpenGLIndexBuffer(cubeIndices, 36));
@@ -278,7 +279,7 @@ namespace Engine {
 		std::shared_ptr<OpenGLIndexBuffer> pyramidIBO;
 
 		pyramidVAO.reset(new OpenGLVertexArray);
-		BufferLayout pyramidBL = { ShaderDataType::Float3, ShaderDataType::Float3 };
+		VertexBufferLayout pyramidBL = { ShaderDataType::Float3, ShaderDataType::Float3 };
 
 		pyramidVBO.reset(new OpenGLVertexBuffer(pyramidVertices, sizeof(pyramidVertices), pyramidBL));
 
@@ -309,13 +310,14 @@ namespace Engine {
 
 		//Camera UBO
 		uint32_t blockNumber = 0; 
-		uint32_t cameraUBO;
-		uint32_t cameraDataSize = sizeof(glm::mat4) * 2;
+		
+		/*uint32_t cameraUBO;
+		UniformBufferLayout camLayout = { {"u_projection", ShaderDataType::Mat4}, {"u_view", ShaderDataType::Mat4} };
 
 		glGenBuffers(1, &cameraUBO);
 		glBindBuffer(GL_UNIFORM_BUFFER, cameraUBO);
-		glBufferData(GL_UNIFORM_BUFFER, cameraDataSize, nullptr, GL_DYNAMIC_DRAW);
-		glBindBufferRange(GL_UNIFORM_BUFFER, blockNumber, cameraUBO, 0, cameraDataSize);
+		glBufferData(GL_UNIFORM_BUFFER, camLayout.getStride(), nullptr, GL_DYNAMIC_DRAW);
+		glBindBufferRange(GL_UNIFORM_BUFFER, blockNumber, cameraUBO, 0, camLayout.getStride());
 
 		uint32_t blockIndex = glGetUniformBlockIndex(FCShader->getID(), "b_camera");
 		glUniformBlockBinding(FCShader->getID(), blockIndex, blockNumber);
@@ -324,8 +326,11 @@ namespace Engine {
 		 blockIndex = glGetUniformBlockIndex(TPShader->getID(), "b_camera");
 		glUniformBlockBinding(TPShader->getID(), blockIndex, blockNumber);
 
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(projection));
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(view));
+		auto element = *camLayout.begin();
+		glBufferSubData(GL_UNIFORM_BUFFER, element.m_offset, element.m_size, glm::value_ptr(projection));
+		
+		element = *(camLayout.begin()+1);
+		glBufferSubData(GL_UNIFORM_BUFFER, element.m_offset, element.m_size, glm::value_ptr(view));*/
 
 		/*
 		
@@ -338,7 +343,16 @@ namespace Engine {
 			uniformLocation = glGetUniformLocation(TPShader->getID(), "u_viewPos");
 			glUniform3f(uniformLocation, 0.f, 0.f, 0.f);
 		*/
-		
+		UniformBufferLayout camLayout = { {"u_projection", ShaderDataType::Mat4}, {"u_view", ShaderDataType::Mat4} };
+
+		std::shared_ptr<OpenGLUniformBuffer> cameraUBO;
+		cameraUBO.reset(new OpenGLUniformBuffer(camLayout));
+
+		cameraUBO->attachShaderBlock(FCShader, "b_camera");
+		cameraUBO->attachShaderBlock(TPShader, "b_camera");
+
+		cameraUBO->uploadData("u_projection", glm::value_ptr(projection));
+		cameraUBO->uploadData("u_view", glm::value_ptr(view));
 		blockNumber++;
 		glm::vec3 lightColour(1.f, 1.f, 1.f);
 		glm::vec3 lightPos(1.f, 4.f, 6.f);
@@ -352,7 +366,7 @@ namespace Engine {
 		glBufferData(GL_UNIFORM_BUFFER, lightsDataSize, nullptr, GL_DYNAMIC_DRAW);
 		glBindBufferRange(GL_UNIFORM_BUFFER, blockNumber, lightsUBO, 0, lightsDataSize);
 
-		blockIndex = glGetUniformBlockIndex(TPShader->getID(), "b_lights");
+		uint32_t blockIndex = glGetUniformBlockIndex(TPShader->getID(), "b_lights");
 		glUniformBlockBinding(TPShader->getID(), blockIndex, blockNumber);
 
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec3), glm::value_ptr(lightPos));
