@@ -9,7 +9,7 @@ namespace Engine
 {
 	enum class ShaderDataType
 	{
-		None = 0, Float, Float2, Float3,Float4, Mat3, Mat4
+		None = 0,Byte4, Short,Short2,Short3,Short4, Float, Float2, Float3,Float4, Mat3, Mat4
 	};
 
 	namespace SDT
@@ -18,6 +18,11 @@ namespace Engine
 		{
 			switch (type)
 			{
+			case ShaderDataType::Byte4: return 4;
+			case ShaderDataType::Short: return 2;
+			case ShaderDataType::Short2: return 2*2;
+			case ShaderDataType::Short3: return 2*3;
+			case ShaderDataType::Short4: return 2*4;
 			case ShaderDataType::Float: return 4;
 			case ShaderDataType::Float2: return 4 * 2;
 			case ShaderDataType::Float3: return 4 * 3;
@@ -31,6 +36,11 @@ namespace Engine
 		{
 			switch (type)
 			{
+			case ShaderDataType::Byte4: return 4;
+			case ShaderDataType::Short: return 1;
+			case ShaderDataType::Short2: return 2;
+			case ShaderDataType::Short3: return 3;
+			case ShaderDataType::Short4: return 4;
 			case ShaderDataType::Float: return 1;
 			case ShaderDataType::Float2: return 2;
 			case ShaderDataType::Float3: return 3;
@@ -44,6 +54,11 @@ namespace Engine
 		{
 			switch (type)
 			{
+			case ShaderDataType::Byte4: return 4;
+			case ShaderDataType::Short: return 2;
+			case ShaderDataType::Short2: return 2 * 2;
+			case ShaderDataType::Short3: return 2 * 4;
+			case ShaderDataType::Short4: return 2 * 4;
 			case ShaderDataType::Float: return 4;
 			case ShaderDataType::Float2: return 4 * 2;
 			case ShaderDataType::Float3: return 4 * 4;

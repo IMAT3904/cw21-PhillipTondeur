@@ -1,4 +1,4 @@
-/** \file bufferLayout.h */
+/**file bufferLayout.h */
 #pragma once
 
 #include "shaderDataType.h"
