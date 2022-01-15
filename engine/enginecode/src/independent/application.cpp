@@ -327,6 +327,7 @@ namespace Engine {
 		glm::vec3 lightColour(1.f, 1.f, 1.f);
 		glm::vec3 lightPos(1.f, 4.f, 6.f);
 		glm::vec3 viewPos(0.f, 0.f, 0.f);
+		glm::vec4 tint(1.f, 1.f, 1.f, 1.f);
 
 		uint32_t lightsUBO;
 		uint32_t lightsDataSize = sizeof(glm::vec4) * 3;
@@ -342,6 +343,7 @@ namespace Engine {
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec3), glm::value_ptr(lightPos));
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::vec4), sizeof(glm::vec3), glm::value_ptr(viewPos));
 		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::vec4) * 2, sizeof(glm::vec3), glm::value_ptr(lightColour));
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::vec4) * 2, sizeof(glm::vec4), glm::value_ptr(tint));
 
 		glm::mat4 models[3];
 		models[0] = glm::translate(glm::mat4(1.0f), glm::vec3(-2.f, 0.f, -6.f));
@@ -397,6 +399,8 @@ namespace Engine {
 			glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(models[2]));
 
 			glBindTexture(GL_TEXTURE_2D, numberTexture->getID());
+
+
 
 			glDrawElements(GL_TRIANGLES, cubeVAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
 			
