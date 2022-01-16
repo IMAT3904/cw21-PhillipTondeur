@@ -12,10 +12,12 @@ namespace Engine
 		{
 			switch (type)
 			{
+			case ShaderDataType::Int: return GL_INT;
 			case ShaderDataType::Float: return GL_FLOAT;
 			case ShaderDataType::Float2: return GL_FLOAT;
 			case ShaderDataType::Float3: return GL_FLOAT;
 			case ShaderDataType::Float4: return GL_FLOAT;
+			case ShaderDataType::Mat4: return GL_FLOAT;
 			default:return GL_INVALID_ENUM;
 			}
 		}
@@ -29,10 +31,10 @@ namespace Engine
 	{
 		glDeleteVertexArrays(1, &m_OpenGL_ID);
 	}
-	void OpenGLVertexArray::addVertexBuffer(const std::shared_ptr<OpenGLVertexBuffer>& vertexBuffer)
+	void OpenGLVertexArray::addVertexBuffer(const std::shared_ptr<VertexBuffer>& vertexBuffer)
 	{
 		glBindVertexArray(m_OpenGL_ID);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer->getrenderID());
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer->getID());
 
 
 
@@ -52,7 +54,10 @@ namespace Engine
 				(void*)element.m_offset);// position
 			m_attributeIndex++;
 		
+		
 		}
+		
+		//m_vertexBuffer.push_back(vertexBuffer);
 	}
 	void OpenGLVertexArray::setIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
 	{

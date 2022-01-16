@@ -2,7 +2,7 @@
 #include "engine_pch.h"
 #include <glad/glad.h>
 #include "platform/OpenGL/OpenGLTexture.h"
-
+#include "rendering/texture.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -30,7 +30,13 @@ namespace Engine
 		glDeleteTextures(1, &m_OpenGL_ID);	
 	}
 
-	void OpenGLTexture::edit(uint32_t xOffset, uint32_t yOffset, uint32_t width, uint32_t height, unsigned char* data)
+	void OpenGLTexture::bindToUnit(uint32_t unit)
+	{
+		glActiveTexture(GL_TEXTURE0 + unit);
+		glBindTexture(GL_TEXTURE_2D, m_OpenGL_ID);
+	}
+
+	void OpenGLTexture::edit(int32_t xOffset, int32_t yOffset, uint32_t width, uint32_t height, unsigned char* data)
 	{
 		glBindTexture(GL_TEXTURE_2D, m_OpenGL_ID);
 		if (data )

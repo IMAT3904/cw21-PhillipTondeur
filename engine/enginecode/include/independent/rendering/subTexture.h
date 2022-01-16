@@ -10,7 +10,7 @@ namespace Engine
 	{
 	public:
 		SubTexture() {}; //!< Basic constructor 
-		SubTexture(const std::shared_ptr<OpenGLTexture>& texture, const glm::vec2& UVStart, const glm::vec2& UVEnd); //!< specialised constructor that needs a texture and Tells the texture what UV bounds we're interested in 
+		SubTexture(const std::shared_ptr<Texture>& texture, const glm::vec2& UVStart, const glm::vec2& UVEnd); //!< specialised constructor that needs a texture and Tells the texture what UV bounds we're interested in 
 		inline glm::vec2 getUVStart() { return m_UVStart; }
 		inline glm::vec2 getUVEnd() { return m_UVEnd; }
 		glm::ivec2 getSize() { return m_size; } //!< stored as integers 
@@ -23,7 +23,7 @@ namespace Engine
 		float transformV(float V); //!< transform original to co-ord in the atlas 
 		glm::vec2 transformUV(glm::vec2 UV);
 	private:
-		std::shared_ptr<OpenGLTexture> m_texture; //!< stores texture
+		std::shared_ptr<Texture> m_texture; //!< stores texture
 		glm::vec2 m_UVStart; //!< stores start of the UV bounds
 		glm::vec2 m_UVEnd; //!< stores end of the uv bounds 
 		glm::ivec2 m_size; //!< Size in pixels 

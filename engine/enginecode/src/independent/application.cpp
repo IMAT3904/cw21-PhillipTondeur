@@ -6,6 +6,9 @@
 
 #include <glad/glad.h>
 
+#include "core/application.h"
+#include "platform/GLFW/GLFWCodes.h"
+
 #ifdef NG_PLATFORM_WINDOWS
 #include "platform/GLFW/GLFWSystem.h"
 #endif
@@ -13,12 +16,14 @@
 #include<glm/gtc/matrix_transform.hpp>
 #include<glm/gtc/type_ptr.hpp>
 
-#include "platform/OpenGL/OpenGLVertexArray.h"
-#include "platform/OpenGL/OpenGLShader.h"
-#include "platform/OpenGL/OpenGLTexture.h"
+
+#include "rendering/indexBuffer.h"
+#include "rendering/vertexBuffer.h"
+#include "rendering/vertexArray.h"
 #include "rendering/subTexture.h"
-#include "rendering/uniformBuffer.h"
-#include "rendering/IndexBuffer.h"
+#include "rendering/texture.h"
+#include "rendering/shader.h"
+#include "rendering/Renderer3D.h"
 
 namespace Engine {
 	// Set static vars
@@ -170,14 +175,19 @@ namespace Engine {
 	{
 #pragma region TEXTURES
 
-		std::shared_ptr<OpenGLTexture> letterTexture;
+		std::shared_ptr<Texture> letterTexture;
 		//letterTexture.reset(new OpenGLTexture("assets/textures/letterAndNumberCube.png"));
-		letterTexture.reset(new OpenGLTexture("assets/textures/letterCube.png"));
-		std::shared_ptr<OpenGLTexture> numberTexture;
-		numberTexture.reset(new OpenGLTexture("assets/textures/numberCube.png"));
+		letterTexture.reset( Texture::create("assets/textures/letterCube.png")); 
 
-		SubTexture letterCube(letterTexture, { 0.f,0.f }, { 1.0f,0.5f });
-		SubTexture numberCube(letterTexture, { 0.f,0.5f }, { 1.0f,1.0f });
+		std::shared_ptr<Texture> numberTexture;
+		numberTexture.reset(Texture::create("assets/textures/numberCube.png"));
+
+		unsigned char whitePx[4] = { 255, 255, 255, 255 };
+		std::shared_ptr<Texture> plainWhiteTexture;
+		plainWhiteTexture.reset(Texture::create(1, 1, 4, whitePx)); // Check after fix
+
+		//SubTexture letterCube(letterTexture, { 0.f,0.f }, { 1.0f,0.5f });
+		//SubTexture numberCube(letterTexture, { 0.f,0.5f }, { 1.0f,1.0f });
 #pragma endregion
 #pragma region RAW_DATA
 
@@ -209,28 +219,28 @@ namespace Engine {
 				 0.5f, -0.5f, 0.5f,   1.f,  0.f,  0.f, 0.66f,  1.0f
 		};
 
-		float pyramidVertices[6 * 16] = {
+		float pyramidVertices[8 * 16] = {
 			//	 <------ Pos ------>  <--- colour ---> 
-				-0.5f, -0.5f, -0.5f,  0.8f, 0.2f, 0.8f, //  square Magneta
-				 0.5f, -0.5f, -0.5f,  0.8f, 0.2f, 0.8f,
-				 0.5f, -0.5f,  0.5f,  0.8f, 0.2f, 0.8f,
-				-0.5f, -0.5f,  0.5f,  0.8f, 0.2f, 0.8f,
+			-0.5f, -0.5f, -0.5f, 0.f,		-1.f, 0.f,  0.f, 0.f,  //  square Magneta
+			 0.5f, -0.5f, -0.5f, 0.f,		-1.f, 0.f,  0.f, 0.5f,
+			 0.5f, -0.5f,  0.5f, 0.f,		-1.f, 0.f,  0.33f, 0.5f,
+			-0.5f, -0.5f,  0.5f, 0.f,		-1.f, 0.f,  0.33f, 0.f,
 
-				-0.5f, -0.5f, -0.5f,  0.2f, 0.8f, 0.2f,  //triangle Green
-				-0.5f, -0.5f,  0.5f,  0.2f, 0.8f, 0.2f,
-				 0.0f,  0.5f,  0.0f,  0.2f, 0.8f, 0.2f,
+			-0.5f, -0.5f, -0.5f, -0.8944f,  0.4472f, 0.f,  0.33f, 1.f,  //triangle Green
+			-0.5f, -0.5f,  0.5f, -0.8944f,  0.4472f, 0.f,  0.66f, 1.f,
+			 0.0f,  0.5f,  0.0f, -0.8944f,  0.4472f, 0.f,  0.495, 0.f,
 
-				-0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.f, //triangle Red
-				 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.f,
-				 0.0f,  0.5f,  0.0f,  1.0f, 0.0f, 0.f,
+			-0.5f, -0.5f,  0.5f,  0.f,		0.4472f, 0.8944f,  0.f, 0.f, ////triangle Red
+			 0.5f, -0.5f,  0.5f,  0.f,		0.4472f, 0.8944f,  0.f, 0.f,
+			 0.0f,  0.5f,  0.0f,  0.f,		0.4472f, 0.8944f,  0.f, 0.f,
 
-				 0.5f, -0.5f,  0.5f,  0.8f, 0.8f, 0.2f, //  triangle Yellow
-				 0.5f, -0.5f, -0.5f,  0.8f, 0.8f, 0.2f,
-				 0.0f,  0.5f,  0.0f,  0.8f, 0.8f, 0.2f,
+			 0.5f, -0.5f,  0.5f,  0.8944f,	0.4472f, 0.f,  0.f, 0.f, // //  triangle Yellow
+			 0.5f, -0.5f, -0.5f,  0.8944f,	0.4472f,  0.f, 0.f, 0.f,
+			 0.0f,  0.5f,  0.0f,  0.8944f,	0.4472f,  0.f, 0.f, 0.f,
 
-				 0.5f, -0.5f, -0.5f,  0.f, 0.2f, 1.0f,//  triangle Blue
-				-0.5f, -0.5f, -0.5f,  0.f, 0.2f, 1.0f,
-				 0.0f,  0.5f,  0.0f,  0.f, 0.2f, 1.0f
+			 0.5f, -0.5f, -0.5f,  0.f,		0.4472f, -0.8944f,   0.f, 0.f, //triangle Blue
+			-0.5f, -0.5f, -0.5f,  0.f,		0.4472f, -0.8944f,   0.f, 0.f,
+			 0.0f,  0.5f,  0.0f,  0.f,		0.4472f, -0.8944f,  0.f, 0.f,
 		};
 
 		uint32_t pyramidIndices[3 * 6] =
@@ -260,49 +270,53 @@ namespace Engine {
 #pragma endregion
 
 #pragma region GL_BUFFERS
-		std::shared_ptr<OpenGLVertexArray> cubeVAO;
-		std::shared_ptr<OpenGLVertexBuffer> cubeVBO;
+		std::shared_ptr<VertexArray> cubeVAO;
+		std::shared_ptr<VertexBuffer> cubeVBO;
 		std::shared_ptr<IndexBuffer> cubeIBO;
 
-		cubeVAO.reset(new OpenGLVertexArray);
+		cubeVAO.reset(VertexArray::create());
 
-		VertexBufferLayout cubeBL = { ShaderDataType::Float3, ShaderDataType::Float3, ShaderDataType::Float2 }; //creating a buffer from it's initialiser list 
-		cubeVBO.reset(new OpenGLVertexBuffer(cubeVertices, sizeof(cubeVertices), cubeBL));
-
-		cubeIBO.reset( IndexBuffer::create(cubeIndices, 36));
+		BufferLayout cubeLayout = { ShaderDataType::Float3, ShaderDataType::Float3, ShaderDataType::Float2 };
+		cubeVBO.reset(VertexBuffer::create(cubeVertices, sizeof(cubeVertices), cubeLayout));
 
 		cubeVAO->addVertexBuffer(cubeVBO);
+
+		cubeIBO.reset(IndexBuffer::create(cubeIndices, 36));
 		cubeVAO->setIndexBuffer(cubeIBO);
 
 
-
-		std::shared_ptr<OpenGLVertexArray> pyramidVAO;
-		std::shared_ptr<OpenGLVertexBuffer> pyramidVBO;
+		std::shared_ptr<VertexArray> pyramidVAO;
+		std::shared_ptr<VertexBuffer> pyramidVBO;
 		std::shared_ptr<IndexBuffer> pyramidIBO;
 
-		pyramidVAO.reset(new OpenGLVertexArray);
-		VertexBufferLayout pyramidBL = { ShaderDataType::Float3, ShaderDataType::Float3 };
+		pyramidVAO.reset(VertexArray::create());
 
-		pyramidVBO.reset(new OpenGLVertexBuffer(pyramidVertices, sizeof(pyramidVertices), pyramidBL));
+		pyramidVBO.reset(VertexBuffer::create(pyramidVertices, sizeof(pyramidVertices), cubeLayout));
 
 		pyramidIBO.reset(IndexBuffer::create(pyramidIndices, 18));
 
 		pyramidVAO->addVertexBuffer(pyramidVBO);
+
 		pyramidVAO->setIndexBuffer(pyramidIBO);
 		
 #pragma endregion
 
 
 #pragma region SHADERS
-		std::shared_ptr<OpenGLShader> FCShader;
-		FCShader.reset(new OpenGLShader("./assets/shaders/flatColour.glsl"));
+		
 		//FCShader.reset(new OpenGLShader("./assets/shaders/flatColour.vert", "./assets/shaders/flatColour.frag"));
 
-		std::shared_ptr<OpenGLShader> TPShader;
-		TPShader.reset(new OpenGLShader("./assets/shaders/texturedPhong.glsl"));
+		std::shared_ptr<Shader> TPShader;
+		TPShader.reset(Shader::create("./assets/shaders/texturedPhong.glsl"));
 #pragma endregion 
 
+#pragma region MATERIALS
 
+		std::shared_ptr<Material> pyramidMat;
+		pyramidMat.reset(new Material(TPShader, { 0.4f, 0.7f, 0.3f, 1.f }));
+
+#pragma endregion
+		
 		glm::mat4 view = glm::lookAt(
 			glm::vec3(0.f, 0.f, 0.f),
 			glm::vec3(0.f, 0.f, -1.f),
@@ -310,38 +324,38 @@ namespace Engine {
 		);
 		glm::mat4 projection = glm::perspective(glm::radians(45.f), 1024.f / 800.f, 0.1f, 100.f);
 
-		//Camera UBO
-		uint32_t blockNumber = 0; 
-		
-		UniformBufferLayout camLayout = { {"u_projection", ShaderDataType::Mat4}, {"u_view", ShaderDataType::Mat4} };
+		////Camera UBO
+		//uint32_t blockNumber = 0; 
+		//
+		//UniformBufferLayout camLayout = { {"u_projection", ShaderDataType::Mat4}, {"u_view", ShaderDataType::Mat4} };
 
-		std::shared_ptr<UniformBuffer> cameraUBO;
-		cameraUBO.reset(UniformBuffer::create(camLayout));
+		//std::shared_ptr<UniformBufferLayout> cameraUBO;
+		//cameraUBO.reset(UniformBufferLayout::create(camLayout));
 
-		cameraUBO->attachShaderBlock(FCShader, "b_camera");
-		cameraUBO->attachShaderBlock(TPShader, "b_camera");
+		//cameraUBO->attachShaderBlock(FCShader, "b_camera");
+		//cameraUBO->attachShaderBlock(TPShader, "b_camera");
 
-		cameraUBO->uploadData("u_projection", glm::value_ptr(projection));
-		cameraUBO->uploadData("u_view", glm::value_ptr(view));
-		blockNumber++;
-		glm::vec3 lightColour(1.f, 1.f, 1.f);
-		glm::vec3 lightPos(1.f, 4.f, 6.f);
-		glm::vec3 viewPos(0.f, 0.f, 0.f);
+		//cameraUBO->uploadData("u_projection", glm::value_ptr(projection));
+		//cameraUBO->uploadData("u_view", glm::value_ptr(view));
+		//blockNumber++;
+		//glm::vec3 lightColour(1.f, 1.f, 1.f);
+		//glm::vec3 lightPos(1.f, 4.f, 6.f);
+		//glm::vec3 viewPos(0.f, 0.f, 0.f);
 
-		uint32_t lightsUBO;
-		uint32_t lightsDataSize = sizeof(glm::vec4) * 3;
+		//uint32_t lightsUBO;
+		//uint32_t lightsDataSize = sizeof(glm::vec4) * 3;
 
-		glGenBuffers(1, &lightsUBO);
-		glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
-		glBufferData(GL_UNIFORM_BUFFER, lightsDataSize, nullptr, GL_DYNAMIC_DRAW);
-		glBindBufferRange(GL_UNIFORM_BUFFER, blockNumber, lightsUBO, 0, lightsDataSize);
+		//glGenBuffers(1, &lightsUBO);
+		//glBindBuffer(GL_UNIFORM_BUFFER, lightsUBO);
+		//glBufferData(GL_UNIFORM_BUFFER, lightsDataSize, nullptr, GL_DYNAMIC_DRAW);
+		//glBindBufferRange(GL_UNIFORM_BUFFER, blockNumber, lightsUBO, 0, lightsDataSize);
 
-		uint32_t blockIndex = glGetUniformBlockIndex(TPShader->getID(), "b_lights");
-		glUniformBlockBinding(TPShader->getID(), blockIndex, blockNumber);
+		//uint32_t blockIndex = glGetUniformBlockIndex(TPShader->getID(), "b_lights");
+		//glUniformBlockBinding(TPShader->getID(), blockIndex, blockNumber);
 
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec3), glm::value_ptr(lightPos));
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::vec4), sizeof(glm::vec3), glm::value_ptr(viewPos));
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::vec4) * 2, sizeof(glm::vec3), glm::value_ptr(lightColour));
+		//glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec3), glm::value_ptr(lightPos));
+		//glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::vec4), sizeof(glm::vec3), glm::value_ptr(viewPos));
+		//glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::vec4) * 2, sizeof(glm::vec3), glm::value_ptr(lightColour));
 
 		glm::mat4 models[3];
 		models[0] = glm::translate(glm::mat4(1.0f), glm::vec3(-2.f, 0.f, -6.f));
@@ -350,6 +364,7 @@ namespace Engine {
 
 		float timestep = 0.f;
 
+		Renderer3D::init();
 		glEnable(GL_DEPTH_TEST);
 		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
 		while (m_running)
@@ -366,40 +381,40 @@ namespace Engine {
 			// Do frame stuff
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			glUseProgram(FCShader->getID());
-			glBindVertexArray(pyramidVAO->getrenderID());
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pyramidIBO->getrenderID());
+			plainWhiteTexture->bindToUnit(0);
 
-			GLuint uniformLocation;
+			glUseProgram(TPShader->getID());
+			glBindVertexArray(pyramidVAO->getID());
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pyramidIBO->getID());
 
-			uniformLocation = glGetUniformLocation(FCShader->getID(), "u_model");
-			glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(models[0])); // Must include <glm/gtc/type_ptr.hpp>
+			TPShader->uploadMat4("u_model", models[0]);
+			TPShader->uploadMat4("u_view", view);
+			TPShader->uploadMat4("u_projection", projection);
 
+			TPShader->uploadFloat3("u_lightColour", glm::vec3(1.f, 1.f, 1.f));
+			TPShader->uploadFloat3("u_lightPos", glm::vec3(1.f, 1.f, 1.f));
+			TPShader->uploadFloat3("u_viewPos", glm::vec3(0.f, 0.f, 0.f));
+
+			TPShader->uploadFloat4("u_tint", { 0.4f, 0.7f, 0.3f, 1.f });
+			TPShader->uploadInt("u_texData", 0);
 
 			glDrawElements(GL_TRIANGLES, pyramidVAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
 
-			glUseProgram(TPShader->getID());
+			glBindVertexArray(cubeVAO->getID());
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeIBO->getID());
 
-			glBindVertexArray(cubeVAO->getrenderID());
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeIBO->getrenderID());
+			TPShader->uploadMat4("u_model", models[1]);
 
-
-			uniformLocation = glGetUniformLocation(TPShader->getID(), "u_model");
-			glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(models[1]));
-
-			glBindTexture(GL_TEXTURE_2D, letterTexture->getID());
-			uniformLocation = glGetUniformLocation(TPShader->getID(), "u_texData");
-			glUniform1i(uniformLocation, 0);
+			letterTexture->bindToUnit(0);
+			TPShader->uploadFloat4("u_tint", { 1.f, 1.f, 1.f, 1.f });
+			TPShader->uploadInt("u_texData", 0);
 
 			glDrawElements(GL_TRIANGLES, cubeVAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
 
-			uniformLocation = glGetUniformLocation(TPShader->getID(), "u_model");
-			glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(models[2]));
-
-			glBindTexture(GL_TEXTURE_2D, numberTexture->getID());
+			TPShader->uploadMat4("u_model", models[2]);
+			numberTexture->bindToUnit(0);
 
 			glDrawElements(GL_TRIANGLES, cubeVAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
-			
 			m_window->onUpdate(timestep);
 		}
 

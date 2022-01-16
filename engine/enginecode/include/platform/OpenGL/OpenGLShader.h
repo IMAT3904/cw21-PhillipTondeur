@@ -4,10 +4,11 @@
 
 #include <cstdint>
 #include <glm/glm.hpp>
+#include "rendering/shader.h"
 
-namespace Engine
+namespace Engine 
 {
-	class OpenGLShader
+	class OpenGLShader : public Shader
 	{
 	public:
 		OpenGLShader(const char* vertexFilepath, const char* fragmentFilepath); //!< Constructor that takes const chars from the filepaths of vertex and fragment
