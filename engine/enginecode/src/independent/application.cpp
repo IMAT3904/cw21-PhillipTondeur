@@ -313,8 +313,13 @@ namespace Engine {
 #pragma region MATERIALS
 
 		std::shared_ptr<Material> pyramidMat;
-		pyramidMat.reset(new Material(TPShader, { 0.4f, 0.7f, 0.3f, 1.f }));
+		pyramidMat.reset(new Material(TPShader, { 1.0f, 0.0f, 0.0f, 1.f }));
+		std::shared_ptr<Material> letterCubeMat;
+		letterCubeMat.reset(new Material(TPShader, letterTexture));
+		std::shared_ptr<Material> numberCubeMat;
+		numberCubeMat.reset(new Material(TPShader, numberTexture));
 
+		
 #pragma endregion
 		
 		glm::mat4 view = glm::lookAt(
@@ -364,11 +369,23 @@ namespace Engine {
 
 		float timestep = 0.f;
 
+		SceneWideUniforms swu3D;
+
+
+		glm::vec3 lightData[3] = { {1.f, 1.f, 1.f }, {-2.f, 4.f, -6.f} ,{0.f,0.f,0.f } };
+		swu3D["u_view"] = std::pair<ShaderDataType, void*>(ShaderDataType::Mat4, static_cast<void*>(glm::value_ptr(view)));
+		swu3D["u_projection"] = std::pair<ShaderDataType, void*>(ShaderDataType::Mat4, static_cast<void*>(glm::value_ptr(projection)));
+		swu3D["u_lightColour"] = std::pair<ShaderDataType, void*>(ShaderDataType::Float3, static_cast<void*>(glm::value_ptr(lightData[0])));
+		swu3D["u_lightPos"] = std::pair<ShaderDataType, void*>(ShaderDataType::Float3, static_cast<void*>(glm::value_ptr(lightData[1])));
+		swu3D["u_viewPos"] = std::pair<ShaderDataType, void*>(ShaderDataType::Float3, static_cast<void*>(glm::value_ptr(lightData[2])));
+		
+		
 		Renderer3D::init();
 		glEnable(GL_DEPTH_TEST);
-		glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 		while (m_running)
 		{
+			
 			timestep = m_timer->getElapsedTime();
 			m_timer->reset();
 			//Log::trace("FPS {0}", 1.0f / timestep);
@@ -377,17 +394,24 @@ namespace Engine {
 			//Log::trace("Current mouse pos: ({0}, {1})", InputPoller::getMouseX(), InputPoller::getMouseY());
 
 			for (auto& model : models) { model = glm::rotate(model, timestep, glm::vec3(0.f, 1.0, 0.f)); }
-
-			// Do frame stuff
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			plainWhiteTexture->bindToUnit(0);
+			Renderer3D::begin(swu3D);
+			
+			Renderer3D::submit(pyramidVAO, pyramidMat, models[0]);
+			Renderer3D::submit(cubeVAO, letterCubeMat, models[1]);
+			Renderer3D::submit(cubeVAO, numberCubeMat, models[2]);
+			Renderer3D::end();
+	
+			
+
+			/*plainWhiteTexture->bindToUnit(0);
 
 			glUseProgram(TPShader->getID());
 			glBindVertexArray(pyramidVAO->getID());
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, pyramidIBO->getID());
 
-			TPShader->uploadMat4("u_model", models[0]);
+		
 			TPShader->uploadMat4("u_view", view);
 			TPShader->uploadMat4("u_projection", projection);
 
@@ -395,10 +419,11 @@ namespace Engine {
 			TPShader->uploadFloat3("u_lightPos", glm::vec3(1.f, 1.f, 1.f));
 			TPShader->uploadFloat3("u_viewPos", glm::vec3(0.f, 0.f, 0.f));
 
+			TPShader->uploadMat4("u_model", models[0]);
 			TPShader->uploadFloat4("u_tint", { 0.4f, 0.7f, 0.3f, 1.f });
-			TPShader->uploadInt("u_texData", 0);
+			TPShader->uploadInt("u_texData", 0);*/
 
-			glDrawElements(GL_TRIANGLES, pyramidVAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
+			//glDrawElements(GL_TRIANGLES, pyramidVAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
 
 			glBindVertexArray(cubeVAO->getID());
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeIBO->getID());

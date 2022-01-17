@@ -15,7 +15,7 @@ namespace Engine
 		static Shader* create(const char* vertexFilepath, const char* fragmentFilepath);
 		static Shader* create(const char* filepath);
 
-		virtual inline uint32_t getID() const = 0;
+		virtual uint32_t getID() const = 0;
 
 		virtual void uploadInt(const char* name, int value) = 0;
 		virtual void uploadFloat(const char* name, float value) = 0;

@@ -57,7 +57,7 @@ namespace Engine
 		
 		}
 		
-		//m_vertexBuffer.push_back(vertexBuffer);
+		m_vertexBuffer.push_back(vertexBuffer);
 	}
 	void OpenGLVertexArray::setIndexBuffer(const std::shared_ptr<IndexBuffer>& indexBuffer)
 	{

@@ -43,10 +43,13 @@ namespace Engine
 				break;
 			case ShaderDataType::Float3:
 				material->getShader()->uploadFloat3(nameOfUniform, *(glm::vec3*)addressOfValue);
+				break;
 			case ShaderDataType::Float4:
 				material->getShader()->uploadFloat4(nameOfUniform, *(glm::vec4*)addressOfValue);
+				break;
 			case ShaderDataType::Mat4:
 				material->getShader()->uploadMat4(nameOfUniform, *(glm::mat4*)addressOfValue);
+				break;
 			}
 		}
 		//apply material uniforms (per draw uniforms)

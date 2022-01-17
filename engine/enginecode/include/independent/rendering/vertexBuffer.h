@@ -10,7 +10,7 @@ namespace Engine
 	public:
 		virtual ~VertexBuffer() = default;
 
-		static VertexBuffer* create(void* vertices, uint32_t size, const BufferLayout layout);
+		static VertexBuffer* create(void* vertices, uint32_t size,  BufferLayout layout);
 
 		virtual inline uint32_t getID() const = 0;
 		virtual const BufferLayout& getLayout() const = 0;

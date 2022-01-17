@@ -20,7 +20,7 @@ namespace Engine
 		virtual inline uint32_t getDrawCount() const = 0;
 		virtual inline uint32_t getIBOID() const = 0;
 
-	private:
+	protected:
 		std::vector<std::shared_ptr<VertexBuffer>> m_vertexBuffer;
 		std::shared_ptr<IndexBuffer> m_indexBuffer;
 	};
