@@ -1,14 +1,11 @@
 /**\file Renderer3D.h*/
 #pragma once
 
-#include <glm/glm.hpp>
-#include <unordered_map>
-#include <memory>
-#include "rendering/vertexArray.h"
-#include "rendering/shader.h"
-#include "rendering/texture.h"
-#include "rendering/shaderDataType.h"
+
+
+
 #include "RenderAPI.h"
+#include "RendererCommon.h"
 
 namespace Engine
 {

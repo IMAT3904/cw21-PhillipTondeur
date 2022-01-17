@@ -380,8 +380,8 @@ namespace Engine {
 		swu3D["u_viewPos"] = std::pair<ShaderDataType, void*>(ShaderDataType::Float3, static_cast<void*>(glm::value_ptr(lightData[2])));
 		
 		
-		Renderer3D::init();
-		glEnable(GL_DEPTH_TEST);
+		//Renderer3D::init();
+		
 		glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 		while (m_running)
 		{
@@ -396,12 +396,13 @@ namespace Engine {
 			for (auto& model : models) { model = glm::rotate(model, timestep, glm::vec3(0.f, 1.0, 0.f)); }
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			/*glEnable(GL_DEPTH_TEST);
 			Renderer3D::begin(swu3D);
 			
 			Renderer3D::submit(pyramidVAO, pyramidMat, models[0]);
 			Renderer3D::submit(cubeVAO, letterCubeMat, models[1]);
 			Renderer3D::submit(cubeVAO, numberCubeMat, models[2]);
-			Renderer3D::end();
+			Renderer3D::end();*/
 	
 			
 
@@ -440,6 +441,8 @@ namespace Engine {
 			numberTexture->bindToUnit(0);
 
 			glDrawElements(GL_TRIANGLES, cubeVAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
+			
+			glDisable(GL_DEPTH_TEST);
 			m_window->onUpdate(timestep);
 		}
 
