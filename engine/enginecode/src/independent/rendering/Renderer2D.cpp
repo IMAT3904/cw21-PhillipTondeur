@@ -6,6 +6,8 @@
 #include <glad/glad.h>
 #include "rendering/Renderer2D.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 
 namespace Engine
 {
@@ -41,6 +43,8 @@ namespace Engine
 		IBO.reset(IndexBuffer::create(indices, 4));
 		s_data->VAO->addVertexBuffer(VBO);
 		s_data->VAO->setIndexBuffer(IBO);
+
+	
 	}
 
 	void Renderer2D::begin(const SceneWideUniforms& swu)
@@ -80,11 +84,65 @@ namespace Engine
 
 	void Renderer2D::submit(Quad& quad, const glm::vec4& tint)
 	{
+		Renderer2D::submit(quad, tint, s_data->defaultTexture);
+	}
 
+	void Renderer2D::submit(Quad& quad, const std::shared_ptr<Texture>& texture)
+	{
+		Renderer2D::submit(quad,s_data->defaultTint, texture);
+	
+	}
+
+	void Renderer2D::submit(Quad& quad, const glm::vec4& tint, const std::shared_ptr<Texture>& texture)
+	{
+		glBindTexture(GL_TEXTURE_2D, texture->getID());
+		s_data->model = glm::scale(glm::translate(glm::mat4(1.f), quad.m_translate), quad.m_scale);
+
+		s_data->shader->uploadInt("u_texData", 0);
+		s_data->shader->uploadFloat4("u_tint", tint);
+		s_data->shader->uploadMat4("u_model", s_data->model);
+
+		glBindVertexArray(s_data->VAO->getID());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s_data->VAO->getIBOID());
+		glDrawElements(GL_QUADS, s_data->VAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
+	}
+
+	void Renderer2D::submit(Quad& quad, const glm::vec4& tint, const std::shared_ptr<Texture>& texture, float angle, bool degrees)
+	{
+		if (degrees) angle = glm::radians(angle);
+		glBindTexture(GL_TEXTURE_2D, texture->getID());
+		s_data->model = glm::scale(glm::rotate(glm::translate(glm::mat4(1.f), quad.m_translate), angle, { 0.f,0.f,1.f }), quad.m_scale);
+
+		s_data->shader->uploadInt("u_texData", 0);
+		s_data->shader->uploadFloat4("u_tint", tint);
+		s_data->shader->uploadMat4("u_model", s_data->model);
+
+		glBindVertexArray(s_data->VAO->getID());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, s_data->VAO->getIBOID());
+		glDrawElements(GL_QUADS, s_data->VAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
+	}
+
+	void Renderer2D::submit(Quad& quad, const glm::vec4& tint, float angle, bool degrees)
+	{
+		Renderer2D::submit(quad, tint, s_data->defaultTexture, angle, degrees);
+	}
+
+	void Renderer2D::submit(Quad& quad, const std::shared_ptr<Texture>& texture, float angle, bool degrees)
+	{
+		Renderer2D::submit(quad, s_data->defaultTint, texture, angle, degrees);
 	}
 
 	void Renderer2D::end()
 	{
 	}
 
+	Quad Quad::createCentreHalfExtents(const glm::vec2& centre, const glm::vec2& halfExtents)
+	{
+		Quad result;
+
+		result.m_translate = glm::vec3(centre, 0.f);
+		result.m_scale = glm::vec3(halfExtents * 2.f, 1.f);
+
+		return result;
+	}
 }

@@ -23,7 +23,9 @@
 #include "rendering/subTexture.h"
 #include "rendering/texture.h"
 #include "rendering/shader.h"
+
 #include "rendering/Renderer3D.h"
+#include "rendering/Renderer2D.h"
 
 namespace Engine {
 	// Set static vars
@@ -369,6 +371,10 @@ namespace Engine {
 
 		float timestep = 0.f;
 
+		glm::mat4 view2D = glm::mat4(1.f);
+		glm::mat4 projection2D = glm::ortho(0.f, static_cast<float>(m_window->getHeight()), 0.f, static_cast<float>(m_window->getWidth()));
+
+
 		SceneWideUniforms swu3D;
 
 
@@ -379,9 +385,22 @@ namespace Engine {
 		swu3D["u_lightPos"] = std::pair<ShaderDataType, void*>(ShaderDataType::Float3, static_cast<void*>(glm::value_ptr(lightData[1])));
 		swu3D["u_viewPos"] = std::pair<ShaderDataType, void*>(ShaderDataType::Float3, static_cast<void*>(glm::value_ptr(lightData[2])));
 		
-		
-		//Renderer3D::init();
-		
+		SceneWideUniforms swu2D;
+		swu2D["u_view"] = std::pair<ShaderDataType, void*>(ShaderDataType::Mat4, static_cast<void*>(glm::value_ptr(view2D)));
+		swu2D["u_projection"] = std::pair<ShaderDataType, void*>(ShaderDataType::Mat4, static_cast<void*>(glm::value_ptr(projection2D)));
+
+		Renderer3D::init();
+		Renderer2D::init();
+
+		Quad quads[6] =
+		{
+		Quad::createCentreHalfExtents({ 400.f, 200.f }, { 100.f, 50.f }),
+		Quad::createCentreHalfExtents({ 200.f, 200.f }, { 50.f, 100.f }),
+		Quad::createCentreHalfExtents({ 400.f, 800.f }, { 75.f, 75.f }),
+		Quad::createCentreHalfExtents({ 100.f, 200.f }, { 100.f, 50.f }),
+		Quad::createCentreHalfExtents({ 500.f, 100.f }, { 50.f, 25.f }),
+		Quad::createCentreHalfExtents({ 600.f, 1000.f }, { 75.f, 15.f })
+		};
 		glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 		while (m_running)
 		{
@@ -396,13 +415,13 @@ namespace Engine {
 			for (auto& model : models) { model = glm::rotate(model, timestep, glm::vec3(0.f, 1.0, 0.f)); }
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			/*glEnable(GL_DEPTH_TEST);
+			glEnable(GL_DEPTH_TEST);
 			Renderer3D::begin(swu3D);
 			
 			Renderer3D::submit(pyramidVAO, pyramidMat, models[0]);
 			Renderer3D::submit(cubeVAO, letterCubeMat, models[1]);
 			Renderer3D::submit(cubeVAO, numberCubeMat, models[2]);
-			Renderer3D::end();*/
+			Renderer3D::end();
 	
 			
 
@@ -443,6 +462,20 @@ namespace Engine {
 			glDrawElements(GL_TRIANGLES, cubeVAO->getDrawCount(), GL_UNSIGNED_INT, nullptr);
 			
 			glDisable(GL_DEPTH_TEST);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			Renderer2D::begin(swu2D);
+
+			Renderer2D::submit(quads[0], { 0.f,1.f,0.f,1.f });
+			Renderer2D::submit(quads[1], letterTexture);
+			Renderer2D::submit(quads[2], { 0.5f,0.5f,0.f,1.f }, numberTexture);
+			Renderer2D::submit(quads[3], { 0.5f,0.5f,0.f,0.5f }, numberTexture, 45.f, true);
+			Renderer2D::submit(quads[3], { 0.5f,0.5f,0.f,1.f }, numberTexture, glm::radians(-45.f));
+			Renderer2D::submit(quads[4], { 1.f,1.f,0.f,1.f }, 30.f, true);
+			Renderer2D::submit(quads[5], { 0.5f,0.5f,0.f,1.f }, letterTexture, 120.f, true);
+
+
+			Renderer2D::end();
 			m_window->onUpdate(timestep);
 		}
 
